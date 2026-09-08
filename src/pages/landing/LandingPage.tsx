@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Layout, MessageSquare, Zap, ArrowRight, Github } from "lucide-react";
+import { CheckCircle2, Layout, MessageSquare, Zap, ArrowRight } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -46,7 +46,7 @@ export default function LandingPage() {
               </Button>
             </Link>
             <Button size="lg" variant="outline" className="h-14 px-8 text-lg gap-2">
-              <Github className="w-5 h-5" /> Ver en GitHub
+              Ver en GitHub
             </Button>
           </div>
         </section>
