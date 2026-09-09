@@ -54,7 +54,14 @@ export default function RegisterPage() {
       });
       
       // Una vez registrado, hacemos login automáticamente
-      login(response.data.user, response.data.token);
+      const backendUser = response.data.usuario;
+      const userToStore = {
+        id: backendUser.id,
+        name: backendUser.nombre,
+        email: backendUser.correo,
+      };
+      
+      login(userToStore, response.data.token);
       navigate("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || "Hubo un error al crear tu cuenta.");

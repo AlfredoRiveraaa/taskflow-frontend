@@ -50,8 +50,15 @@ export default function LoginPage() {
         password: values.password
       });
       
-      // El backend devuelve: { user, token }
-      login(response.data.user, response.data.token);
+      // El backend devuelve: { mensaje, token, usuario: { id, nombre, correo } }
+      const backendUser = response.data.usuario;
+      const userToStore = {
+        id: backendUser.id,
+        name: backendUser.nombre,
+        email: backendUser.correo,
+      };
+      
+      login(userToStore, response.data.token);
       
       navigate("/dashboard");
     } catch (err: any) {
