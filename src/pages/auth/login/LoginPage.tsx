@@ -44,8 +44,11 @@ export default function LoginPage() {
     try {
       setError(null);
       
-      // Llamada real al backend Node.js
-      const response = await api.post('/auth/login', values);
+      // Llamada real al backend Node.js, mapeando "email" al campo "correo" que espera el backend
+      const response = await api.post('/auth/login', {
+        correo: values.email,
+        password: values.password
+      });
       
       // El backend devuelve: { user, token }
       login(response.data.user, response.data.token);

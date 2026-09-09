@@ -48,8 +48,8 @@ export default function RegisterPage() {
       setError(null);
       // Petición real al backend para registrar
       const response = await api.post('/auth/register', {
-        name: values.name,
-        email: values.email,
+        nombre: values.name,
+        correo: values.email,
         password: values.password
       });
       
