@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,9 +14,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Zap } from "lucide-react";
+import { Zap, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
-// import api from "@/services/api"; // Lo usaremos cuando el backend esté encendido
+import api from "@/services/api";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -29,6 +30,7 @@ const formSchema = z.object({
 export default function LoginPage() {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,24 +41,19 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Aquí es donde normalmente harías:
-    // const response = await api.post('/auth/login', values);
-    // login(response.data.user, response.data.token);
-    
-    console.log("Valores enviados al backend:", values);
-    
-    // SIMULACIÓN: Logueando al usuario sin backend por ahora
-    const mockUser = { 
-      id: "1", 
-      name: "Alfredo Rivera", // Este nombre aparecerá dinámicamente en tu Dashboard
-      email: values.email 
-    };
-    const mockToken = "fake-jwt-token-12345";
-    
-    login(mockUser, mockToken);
-    
-    // Redirigir al dashboard protegido
-    navigate("/dashboard");
+    try {
+      setError(null);
+      
+      // Llamada real al backend Node.js
+      const response = await api.post('/auth/login', values);
+      
+      // El backend devuelve: { user, token }
+      login(response.data.user, response.data.token);
+      
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Error al iniciar sesión. Revisa tus credenciales.");
+    }
   }
 
   return (
@@ -76,6 +73,11 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
+              {error}
+            </div>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
