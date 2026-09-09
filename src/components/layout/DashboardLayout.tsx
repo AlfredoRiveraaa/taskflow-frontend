@@ -1,15 +1,37 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, Navigate, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FolderKanban, Bell, LogOut, Menu, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/authStore";
 
 export default function DashboardLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Consumimos el estado global de zustand
+  const { user, isAuthenticated, logout } = useAuthStore();
+  
+  // Guardián de ruta: Si no está autenticado, lo echamos al login.
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/login" replace />;
+  }
   
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Mis Proyectos", path: "/projects", icon: FolderKanban },
     { name: "Notificaciones", path: "/notifications", icon: Bell },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/auth/login");
+  };
+
+  // Extraer las iniciales del usuario (ej. "Alfredo Rivera" -> "AR")
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    const parts = name.split(" ");
+    return parts.map(p => p[0]).join("").substring(0, 2).toUpperCase();
+  };
 
   return (
     <div className="min-h-screen bg-zinc-50 flex">
@@ -43,12 +65,14 @@ export default function DashboardLayout() {
         </nav>
 
         <div className="p-4 border-t border-zinc-200">
-          <Link to="/">
-            <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900">
-              <LogOut className="w-5 h-5 mr-3" />
-              Cerrar Sesión
-            </Button>
-          </Link>
+          <Button 
+            variant="ghost" 
+            onClick={handleLogout}
+            className="w-full justify-start text-zinc-600 hover:text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="w-5 h-5 mr-3" />
+            Cerrar Sesión
+          </Button>
         </div>
       </aside>
 
@@ -57,7 +81,6 @@ export default function DashboardLayout() {
         {/* Navbar - Mobile & Header */}
         <header className="h-16 bg-white border-b border-zinc-200 flex items-center justify-between px-4 md:px-6">
           <div className="flex items-center md:hidden">
-            {/* Aquí luego agregaremos el componente Sheet de shadcn para el menú móvil */}
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="w-6 h-6 text-zinc-600" />
             </Button>
@@ -73,8 +96,11 @@ export default function DashboardLayout() {
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
             </Button>
-            <div className="w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-sm">
-              AR
+            <div 
+              className="w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-sm"
+              title={user?.email} // Muestra el correo al pasar el cursor
+            >
+              {getInitials(user?.name || "")}
             </div>
           </div>
         </header>
