@@ -4,6 +4,7 @@ import LoginPage from "./pages/auth/login/LoginPage";
 import RegisterPage from "./pages/auth/register/RegisterPage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import DashboardPage from "./pages/dashboard/DashboardPage";
+import KanbanBoardPage from "./pages/projects/KanbanBoardPage";
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
         {/* Rutas Protegidas (Requieren autenticación) */}
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          {/* Aquí agregaremos más rutas como /projects, /tasks, etc. */}
+          {/* Vista de Tablero Kanban */}
+          <Route path="/projects" element={<KanbanBoardPage />} />
         </Route>
         
         {/* Fallback */}
